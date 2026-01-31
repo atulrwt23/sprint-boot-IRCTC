@@ -1,7 +1,9 @@
 package org.learn.irctc.service;
 
+import org.learn.di.annotation.Component;
 import org.learn.irctc.repository.StationRepository;
 
+@Component
 public class StationService {
     private final StationRepository stationRepository;
 

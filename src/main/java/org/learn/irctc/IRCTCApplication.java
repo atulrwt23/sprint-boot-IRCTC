@@ -1,15 +1,15 @@
 package org.learn.irctc;
 
 import org.learn.di.ApplicationContext;
-import org.learn.di.ComponentScanner;
-import org.learn.irctc.service.BookingService;
 import org.learn.irctc.service.CancellationService;
 
 public class IRCTCApplication {
     public static void main(String[] args) {
-        System.out.println("---------------------------------------------------------");
-        ApplicationContext.getInstance();
-        System.out.println("---------------------------------------------------------");
+        System.out.println("====================================================================");
+        ApplicationContext applicationContext = ApplicationContext.getInstance();
+        CancellationService bean = applicationContext.getBean(CancellationService.class);
+        System.out.println(bean);
+        System.out.println("====================================================================");
     }
 
 //    private static void performBookingAction() {

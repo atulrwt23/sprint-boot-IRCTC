@@ -1,5 +1,8 @@
 package org.learn.di;
 
+import org.learn.di.annotation.Component;
+import org.learn.di.error.BeanCreationError;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,10 +20,14 @@ public class ApplicationContext {
         return applicationContext;
     }
 
-    public <T> T get(Class<T> clz) {
+    private <T> T get(Class<T> clz) {
         if (this.cache.containsKey(clz.getName())) {
             System.out.println("User instance from cache for class : " + clz.getName());
             return (T) this.cache.get(clz.getName());
+        }
+
+        if (!clz.isAnnotationPresent(Component.class)) {
+            throw BeanCreationError.notAComponent(clz);
         }
         System.out.println("Creating instance of " + clz.getName());
         Constructor<?> constructor = clz.getConstructors()[0];
@@ -42,5 +49,9 @@ public class ApplicationContext {
         for (Class<?> aClass : ComponentScanner.getAllComponentsClasses()) {
             get(aClass);
         }
+    }
+
+    public <T> T getBean(Class<T> Clz) {
+        return (T) cache.get(Clz.getName());
     }
 }

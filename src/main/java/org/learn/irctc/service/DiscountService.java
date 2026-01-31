@@ -1,5 +1,8 @@
 package org.learn.irctc.service;
 
+import org.learn.di.annotation.Component;
+
+@Component
 public class DiscountService {
     private final OfferService offerService;
 

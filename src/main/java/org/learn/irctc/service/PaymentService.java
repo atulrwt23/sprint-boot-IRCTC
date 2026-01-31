@@ -1,7 +1,9 @@
 package org.learn.irctc.service;
 
+import org.learn.di.annotation.Component;
 import org.learn.irctc.gateway.PaymentGateway;
 
+@Component
 public class PaymentService {
     private final PaymentGateway paymentGateway;
 

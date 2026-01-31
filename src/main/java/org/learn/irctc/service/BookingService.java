@@ -1,7 +1,9 @@
 package org.learn.irctc.service;
 
+import org.learn.di.annotation.Component;
 import org.learn.irctc.repository.BookingRepository;
 
+@Component
 public class BookingService {
     private final StationService stationService;
     private final UserService userService;
