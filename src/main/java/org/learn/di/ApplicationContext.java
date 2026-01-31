@@ -7,8 +7,14 @@ import java.util.HashMap;
 public class ApplicationContext {
     private final HashMap<String, Object> cache;
 
-    public ApplicationContext() {
-        this.cache = new HashMap<>();
+    private ApplicationContext(HashMap<String, Object> cache) {
+        this.cache = cache;
+    }
+
+    public static ApplicationContext getInstance() {
+        ApplicationContext applicationContext = new ApplicationContext(new HashMap<>());
+        applicationContext.init();
+        return applicationContext;
     }
 
     public <T> T get(Class<T> clz) {
@@ -29,6 +35,12 @@ public class ApplicationContext {
         } catch (Throwable e) {
             System.out.println("Message : " + e.getMessage().toUpperCase());
             throw new RuntimeException("Unable to instantiate class " + clz.getName());
+        }
+    }
+
+    public void init() {
+        for (Class<?> aClass : ComponentScanner.getAllComponentsClasses()) {
+            get(aClass);
         }
     }
 }
