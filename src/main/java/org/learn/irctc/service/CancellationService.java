@@ -1,6 +1,7 @@
 package org.learn.irctc.service;
 
-import org.learn.di.annotation.Component;
+
+import di.annotation.Component;
 
 @Component
 public class CancellationService {

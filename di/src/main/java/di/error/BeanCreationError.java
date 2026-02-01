@@ -1,4 +1,4 @@
-package org.learn.di.error;
+package di.error;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,8 +1,9 @@
 package org.learn.irctc.repository;
 
-import org.learn.di.annotation.Component;
-import org.learn.di.annotation.Primary;
-import org.learn.di.annotation.Property;
+
+import di.annotation.Component;
+import di.annotation.Primary;
+import di.annotation.Property;
 
 @Component
 @Primary

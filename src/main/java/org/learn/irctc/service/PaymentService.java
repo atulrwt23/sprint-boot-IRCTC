@@ -1,6 +1,6 @@
 package org.learn.irctc.service;
 
-import org.learn.di.annotation.Component;
+import di.annotation.Component;
 import org.learn.irctc.gateway.PaymentGateway;
 
 @Component

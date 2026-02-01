@@ -1,9 +1,9 @@
-package org.learn.di;
+package di;
 
-import org.learn.di.annotation.Component;
-import org.learn.di.annotation.Primary;
-import org.learn.di.annotation.Property;
-import org.learn.di.error.BeanCreationError;
+import di.annotation.Component;
+import di.annotation.Primary;
+import di.annotation.Property;
+import di.error.BeanCreationError;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;

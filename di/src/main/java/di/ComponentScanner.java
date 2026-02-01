@@ -1,11 +1,12 @@
-package org.learn.di;
+package di;
+
+import di.annotation.Component;
 
 import org.burningwave.core.assembler.ComponentContainer;
 import org.burningwave.core.classes.ClassCriteria;
 import org.burningwave.core.classes.ClassHunter;
 import org.burningwave.core.classes.SearchConfig;
 import org.burningwave.core.io.PathHelper;
-import org.learn.di.annotation.Component;
 
 import java.util.Collection;
 

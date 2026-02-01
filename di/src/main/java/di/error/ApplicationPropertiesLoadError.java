@@ -1,4 +1,4 @@
-package org.learn.di.error;
+package di.error;
 
 public class ApplicationPropertiesLoadError extends RuntimeException {
     public ApplicationPropertiesLoadError(String msg) {

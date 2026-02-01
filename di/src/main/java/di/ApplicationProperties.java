@@ -1,6 +1,6 @@
-package org.learn.di;
+package di;
 
-import org.learn.di.error.ApplicationPropertiesLoadError;
+import di.error.ApplicationPropertiesLoadError;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

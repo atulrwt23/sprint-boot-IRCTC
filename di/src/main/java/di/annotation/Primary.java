@@ -1,4 +1,4 @@
-package org.learn.di.annotation;
+package di.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

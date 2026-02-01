@@ -1,6 +1,6 @@
 package org.learn.irctc.repository;
 
-import org.learn.di.annotation.Component;
+import di.annotation.Component;
 
 @Component
 public class UserRepository {

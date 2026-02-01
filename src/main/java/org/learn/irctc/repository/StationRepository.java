@@ -1,6 +1,6 @@
 package org.learn.irctc.repository;
 
-import org.learn.di.annotation.Component;
+import di.annotation.Component;
 import org.learn.irctc.model.Station;
 
 import java.util.HashMap;
