@@ -2,6 +2,7 @@ package org.learn.di;
 
 import org.learn.di.annotation.Component;
 import org.learn.di.annotation.Primary;
+import org.learn.di.annotation.Property;
 import org.learn.di.error.BeanCreationError;
 
 import java.lang.reflect.Constructor;
@@ -24,7 +25,7 @@ public class ApplicationContext {
         return applicationContext;
     }
 
-    private <T> T get(Class<T> clz, Collection<Class<?>> classes) {
+    private <T> T get(Class<T> clz, Collection<Class<?>> classes, ApplicationProperties applicationProperties) {
         if (this.cache.containsKey(clz.getName())) {
             System.out.println("User instance from cache for class : " + clz.getName());
             return (T) this.cache.get(clz.getName());
@@ -41,19 +42,25 @@ public class ApplicationContext {
             }
 
             System.out.println("Found implementation for interface " + clz.getName() + " : " + implementationClass.getName());
-            T instance = (T) createInstanceOf(implementationClass, classes);
+            T instance = (T) createInstanceOf(implementationClass, classes, applicationProperties);
             this.cache.put(clz.getName(), instance);
             return instance;
         }
 
-        return createInstanceOf(clz, classes);
+        return createInstanceOf(clz, classes, applicationProperties);
     }
 
-    private <T> T createInstanceOf(Class<T> clz, Collection<Class<?>> classes) {
+    private <T> T createInstanceOf(Class<T> clz, Collection<Class<?>> classes, ApplicationProperties applicationProperties) {
         System.out.println("Creating instance of " + clz.getName());
         Constructor<?> constructor = clz.getConstructors()[0];
         Object[] args = Arrays.stream(constructor.getParameters())
-                .map(parameter -> get(parameter.getType(), classes))
+                .map(parameter -> {
+                    if (parameter.isAnnotationPresent(Property.class)) {
+                        String value = applicationProperties.get(parameter.getAnnotation(Property.class).value());
+                        return value;
+                    }
+                    return get(parameter.getType(), classes, applicationProperties);
+                })
                 .toArray();
         try {
 
@@ -96,8 +103,9 @@ public class ApplicationContext {
 
     public void init() {
         Collection<Class<?>> allComponentsClasses = ComponentScanner.getAllComponentsClasses("");
+        ApplicationProperties applicationProperties = ApplicationProperties.load();
         for (Class<?> aClass : allComponentsClasses) {
-            get(aClass, allComponentsClasses);
+            get(aClass, allComponentsClasses, applicationProperties);
         }
     }
 
