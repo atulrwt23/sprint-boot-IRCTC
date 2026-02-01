@@ -14,4 +14,8 @@ public class UserService {
     public void getUserDetails() {
         System.out.println("User Service : Getting user details");
     }
+
+    public void createUser() {
+        System.out.println("User Service : Creating user");
+    }
 }
