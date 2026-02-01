@@ -10,7 +10,7 @@ import org.learn.di.annotation.Component;
 import java.util.Collection;
 
 public class ComponentScanner {
-    public static Collection<Class<?>> getAllComponentsClasses() {
+    public static Collection<Class<?>> getAllComponentsClasses(String rootPath) {
         ComponentContainer container = ComponentContainer.getInstance();
         PathHelper pathHelper = container.getPathHelper();
         ClassHunter classHunter = container.getClassHunter();
