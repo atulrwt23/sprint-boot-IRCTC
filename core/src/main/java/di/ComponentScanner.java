@@ -1,5 +1,6 @@
 package di;
 
+import di.annotation.AutoConfiguration;
 import di.annotation.Component;
 
 import org.burningwave.core.assembler.ComponentContainer;
@@ -18,7 +19,7 @@ public class ComponentScanner {
 
         SearchConfig searchConfig = SearchConfig.forPaths(pathHelper.getMainClassPaths())
                 .by(ClassCriteria.create().allThoseThatMatch(cls ->
-                        cls.getAnnotation(Component.class) != null
+                        cls.isAnnotationPresent(Component.class) || cls.isAnnotationPresent(AutoConfiguration.class)
                 ));
 
         return classHunter.findBy(searchConfig).getClasses();

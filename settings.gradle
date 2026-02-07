@@ -1,3 +1,3 @@
 rootProject.name = 'spring-boot-irctc'
 
-include 'core'
+include ('core', 'web')

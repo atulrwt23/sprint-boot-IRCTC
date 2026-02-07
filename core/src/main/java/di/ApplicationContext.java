@@ -1,15 +1,12 @@
 package di;
 
-import di.annotation.Component;
-import di.annotation.Primary;
-import di.annotation.Property;
+import di.annotation.*;
+import di.error.AutoConfigurationError;
 import di.error.BeanCreationError;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ApplicationContext {
@@ -31,12 +28,16 @@ public class ApplicationContext {
             return (T) this.cache.get(clz.getName());
         }
 
-        if (!clz.isAnnotationPresent(Component.class) && !clz.isInterface()) {
+        if (!(clz.isAnnotationPresent(Component.class) || clz.isAnnotationPresent(AutoConfiguration.class)) && !clz.isInterface()) {
             throw BeanCreationError.notAComponent(clz);
         }
 
+        if (clz.isAnnotation()) {
+            return null;
+        }
+
         if (clz.isInterface()) {
-            Class<?> implementationClass = findImplementationOf(clz, classes);
+            Class<T> implementationClass = findImplementationOf(clz, classes);
             if (implementationClass == null) {
                 throw BeanCreationError.noImplementationFound(clz);
             }
@@ -52,7 +53,11 @@ public class ApplicationContext {
 
     private <T> T createInstanceOf(Class<T> clz, Collection<Class<?>> classes, ApplicationProperties applicationProperties) {
         System.out.println("Creating instance of " + clz.getName());
-        Constructor<?> constructor = clz.getConstructors()[0];
+        Constructor<?>[] constructors = clz.getConstructors();
+        if (constructors.length < 1) {
+            return null;
+        }
+        Constructor<?> constructor = constructors[0];
         Object[] args = Arrays.stream(constructor.getParameters())
                 .map(parameter -> {
                     if (parameter.isAnnotationPresent(Property.class)) {
@@ -73,7 +78,7 @@ public class ApplicationContext {
         }
     }
 
-    private <T> Class<?> findImplementationOf(Class<T> clz, Collection<Class<?>> classes) {
+    private <T> Class<T> findImplementationOf(Class<T> clz, Collection<Class<?>> classes) {
         List<Class<?>> implementingClasses = classes.stream()
                 .filter(aClass -> clz.isAssignableFrom(aClass))
                 .collect(Collectors.toList());
@@ -83,7 +88,7 @@ public class ApplicationContext {
         }
 
         if (implementingClasses.size() == 1) {
-            return implementingClasses.get(0);
+            return (Class<T>) implementingClasses.get(0);
         }
 
         List<Class<?>> primaryClass = implementingClasses.stream()
@@ -98,14 +103,37 @@ public class ApplicationContext {
             throw BeanCreationError.moreThanOnePrimaryImplementationPresent(clz, primaryClass);
         }
 
-        return primaryClass.get(0);
+        return (Class<T>) primaryClass.get(0);
     }
 
     public void init() {
-        Collection<Class<?>> allComponentsClasses = ComponentScanner.getAllComponentsClasses("");
+        Collection<Class<?>> classes = ComponentScanner.getAllComponentsClasses("");
         ApplicationProperties applicationProperties = ApplicationProperties.load();
-        for (Class<?> aClass : allComponentsClasses) {
-            get(aClass, allComponentsClasses, applicationProperties);
+        for (Class<?> aClass : classes) {
+            get(aClass, classes, applicationProperties);
+        }
+        runAutoConfigurations(this.cache.values());
+    }
+
+    private void runAutoConfigurations(Collection<Object> allClasses) {
+        allClasses.stream()
+                .filter(clz -> clz.getClass().isAnnotationPresent(AutoConfiguration.class))
+                .forEach(clz -> runAutoConfiguration(clz , allClasses));
+    }
+
+    private void runAutoConfiguration(Object clz, Collection<Object> allClasses) {
+        ArrayList<Method> method = Arrays.stream(clz.getClass().getDeclaredMethods())
+                .filter(m -> m.isAnnotationPresent(Configure.class))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        if (method.isEmpty() || method.size() > 1) {
+            throw AutoConfigurationError.isInvalidCountOfConfigureMethod(clz.getClass(), method);
+        }
+
+        try {
+            method.get(0).invoke(clz, allClasses);
+        } catch (Throwable e) {
+            throw AutoConfigurationError.isInvalidConfigureMethod(clz.getClass(), method.get(0).getName(), e.getMessage());
         }
     }
 
