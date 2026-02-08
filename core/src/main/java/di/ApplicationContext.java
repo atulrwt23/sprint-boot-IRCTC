@@ -28,7 +28,7 @@ public class ApplicationContext {
             return (T) this.cache.get(clz.getName());
         }
 
-        if (!(clz.isAnnotationPresent(Component.class) || clz.isAnnotationPresent(AutoConfiguration.class)) && !clz.isInterface()) {
+        if (!isAnnotatedWithComponent(clz) && !clz.isInterface()) {
             throw BeanCreationError.notAComponent(clz);
         }
 
@@ -49,6 +49,15 @@ public class ApplicationContext {
         }
 
         return createInstanceOf(clz, classes, applicationProperties);
+    }
+
+    private <T> boolean isAnnotatedWithComponent(Class<T> clz) {
+        return clz.isAnnotationPresent(Component.class) ||
+                Arrays.stream(clz.getAnnotations())
+                        .anyMatch(annotation -> annotation
+                                .annotationType()
+                                .isAnnotationPresent(Component.class)
+                        );
     }
 
     private <T> T createInstanceOf(Class<T> clz, Collection<Class<?>> classes, ApplicationProperties applicationProperties) {
